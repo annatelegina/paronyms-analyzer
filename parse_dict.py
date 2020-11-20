@@ -21,7 +21,7 @@ def parse_dict(filepath, kind='word'):
     first = True
     help_coef = 0
     for x in f:
-        natural_dec = x.decode('utf-8')
+        natural_dec = x.decode('utf8')
         s = natural_dec.strip().split()
         word = delete_symbols(s[4], kind)
         if kind == 'word':
@@ -31,13 +31,13 @@ def parse_dict(filepath, kind='word'):
                 paronims.append((help_coef, pairs))
             help_coef = int(s[1])
             pairs = []
-            pairs.append((s[2], s[3], word))
+            pairs.append(word)
             first = False
         else:
             first = False
-            pairs.append((s[2], s[3], word))
+            pairs.append(word)
         i += 1
-        #if i > 20:
-         #   break
+        if i > 20:
+            break
     f.close()
     return paronims
