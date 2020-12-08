@@ -37,7 +37,7 @@ def parse_dict(filepath, kind='word'):
             first = False
             pairs.append(word)
         i += 1
-        if i > 20:
-            break
+        #if i > 20:
+        #    break
     f.close()
     return paronims
