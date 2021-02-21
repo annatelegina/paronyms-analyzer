@@ -2,8 +2,10 @@ from transformers import BertTokenizer, BertModel
 from sentence_transformers import util
 import torch
 import torch.nn as nn
+import sys
 
-from parse_dict import *
+sys.path.append("../")
+from utils import *
 import xlrd, xlwt
 
 PATH = "./RED.txt"
