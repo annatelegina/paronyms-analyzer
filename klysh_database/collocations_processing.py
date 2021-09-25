@@ -4,36 +4,62 @@ import sys
 import glob
 import math
 
+sys.path.append("..")
+sys.path.append("../utils")
+
+from parse_dict import *
 from intersection_count import *
+from kol_utils import *
+from connect import *
 
-directory = sys.argv[1]
+pos = 1
+dict_path = "../RED.txt"
 
-files = os.listdir(directory)
+
+pairs = parse_dict(dict_path, pos=pos)
+
+main_stat = "../database/adj_nouns_main_dict_inf.csv"
+tail_stat = "../database/adj_nouns_tail_dict_inf.csv"
+
+result_dir = "../results_threshold"
+
+if not os.path.exists(result_dir):
+    os.mkdir(result_dir)
+
+file_name = "total_info.txt"
+
 threshold = 10
 
-for f in files:
-    node = {}
-    length = 0
-    words = []
-    with open(os.path.join(directory, f), newline='') as csvfile:
-        reader = csv.DictReader(csvfile,  delimiter=',')
-        
-        for row in reader:
-            main_word = row['main_word']
-            if main_word not in node.keys():
-                node[main_word] = {}
-                words.append(main_word)
-                length += 1
-            tail_word = row['tail_word']
-            if tail_word not in node[main_word].keys():
-                if int(row['freq']) > threshold:
-                    node[main_word][tail_word] = int(row['freq'])
+out_file = os.path.join(result_dir, file_name)
+result_file = open(out_file, "w+")
 
-        for i in range(length):
-            for j in range(i+1, length):
-                cap1 = len(node[words[i]].keys())
-                cap2 = len(node[words[i]].keys())
-                intersec, cap12 = col_intersection(node[words[i]], node[words[j]])
-                print(cap12 / math.sqrt(cap1*cap2))
+main_words = open_scv_statistics(main_stat)
+tail_words = open_scv_statistics(tail_stat)
 
-#    assert False
+measure = "threshold"
+
+connection = create_connection("cosyco.ru", "cosycoreader", "Rh@cysqIbyibkk@5")
+
+
+for p in range(len(pairs)):
+    w = pairs[p][1]
+
+    l = len(w)
+    for i in range(l):
+        for j in range(i+1, l):
+
+            w1 = w[i].upper()
+            w2 = w[j].upper()
+            query = "select tail_word, freq from cosyco_base.adj_noun_comb_inf where cosyco_base.adj_noun_comb_inf.main_word = \"{:s}\" "
+
+            res1, cap1 = from_tuples_to_dict(execute_read_query(connection, query.format(w1)))
+            res2, cap2 = from_tuples_to_dict(execute_read_query(connection, query.format(w2)))
+
+            if cap1 == 0 or cap2 == 0:
+                k = 0
+            else:
+                intersec, cap12 = col_intersection(res1, res2, w1, w2, main_words, tail_words,  measure, threshold)
+                k = cap12 / math.sqrt(cap1*cap2)
+            
+            print(w1, w2, k)
+ 
