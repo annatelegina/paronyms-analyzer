@@ -9,7 +9,7 @@ def create_connection(host_name, user_name, user_password):
             user=user_name,
             passwd=user_password
         )
-        print("Connection to MySQL DB successful")
+        #print("Connection to MySQL DB successful")
     except Error as e:
         print(f"The error '{e}' occurred")
 

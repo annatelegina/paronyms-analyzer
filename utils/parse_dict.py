@@ -11,7 +11,7 @@ def delete_symbols(word, kind='word'):
     return new
 
 
-def parse_dict(filepath, kind='word'): 
+def parse_dict(filepath, kind='word', pos=None): 
     #kind : word or lists of prefixes, affixes and suffixes
     f = open(filepath, 'rb')
     i = 0
@@ -20,10 +20,13 @@ def parse_dict(filepath, kind='word'):
     pairs = []
     first = True
     help_coef = 0
+
     for x in f:
         natural_dec = x.decode('utf8')
         s = natural_dec.strip().split()
         word = delete_symbols(s[4], kind)
+        if pos is not None and int(s[1]) != pos:
+            continue
         if kind == 'word':
             word = word.lower()
         if s[0] == '+':
@@ -37,7 +40,5 @@ def parse_dict(filepath, kind='word'):
             first = False
             pairs.append(word)
         i += 1
-        #if i > 20:
-        #    break
     f.close()
     return paronims
