@@ -1,17 +1,23 @@
 import sys
-from ..parse_dict import *
+sys.path.append("..")
+sys.path.append("../utils")
+
+from parse_dict import *
 from ru_soundex.soundex import RussianSoundex
 from ru_soundex.distance import SoundexDistance
 
 
-def sound_preprocessing_not_dict(path):
+def sound_preprocessing_not_dict(path, POS = None):
     soundex = RussianSoundex(delete_first_letter=True)
     soundex_distance = SoundexDistance(soundex)
     words = open(path, 'r')
     for slot in words:
         x, y = slot.split()
         dist = soundex_distance.distance(x, y)
-        print(x, y, dist)
+        if POS:
+            print(POS, x, y, dist)
+        else:
+            print(x, y, dist)
 
 def sound_preprocessing(path, part=0):
     soundex = RussianSoundex(delete_first_letter=True)
@@ -23,17 +29,17 @@ def sound_preprocessing(path, part=0):
             continue
         for w1 in range(len(words)):
             for w2 in range(w1+1, len(words)):
-                x = words[w1][2]
-                y = words[w2][2]
+                x = words[w1]
+                y = words[w2]
                 dist = soundex_distance.distance(x, y)
                 print(x, y, dist)
 
 def main():
-    use_dict = False
+    use_dict = True
     if use_dict:
         sound_preprocessing(sys.argv[1], int(sys.argv[2]))
     else:
-        sound_preprocessing_not_dict(sys.argv[1])
+        sound_preprocessing_not_dict(sys.argv[1], int(sys.argv[2]))
 
 if __name__ == "__main__":
     main()
