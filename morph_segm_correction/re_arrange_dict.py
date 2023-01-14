@@ -28,20 +28,21 @@ def read_file(path):
 
 
 pos = None 
-dict_path = "../NEW_RED_FIXED.txt"
+dict_path = sys.argv[1]
+
 pairs = parse_dict(dict_path, pos=pos)
 f = open(dict_path, 'r')
 strings = []
 for line in f:
     strings.append(line)
 
-dict_p = open(dict_path,'r')
-for line in dict_p:
-    strings.append(line.strip())
-dict_p.close()
+#dict_p = open(dict_path,'r')
+#for line in dict_p:
+#    strings.append(line.strip())
+f.close()
 
 i = 0
-new_file = sys.argv[1]
+new_file = sys.argv[2]
 
 new_words = read_file(new_file)
 for p in pairs:
@@ -65,7 +66,8 @@ for p in pairs:
                 col.append(ww)
             if old[-1] == "*":
                 col.append("*")
-            #print(parts, "".join(col).upper())
+            print(parts, "".join(col).upper())
         else:
-            print(p[0], w, strings[i])
+            #pass
+            print("AA", p[0], w, strings[i].strip())
         i += 1
