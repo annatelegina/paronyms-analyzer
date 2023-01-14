@@ -2,9 +2,12 @@ import openpyxl
 import xlrd, xlwt
 import re
 import os
+import sys
+sys.path.append("..")
+sys.path.append("../utils")
 
 from api import *
-from utils import parse_dict
+from parse_dict import *
 
 def get_distant(model, direct, filepath, form='csv', find_n=False, ps=0):
     #for excel files
@@ -32,6 +35,7 @@ def get_distant(model, direct, filepath, form='csv', find_n=False, ps=0):
             continue
         for j in range(len(pairs)):
             for p in range(j+1, len(pairs)):
+                #print(pairs[j], pairs[p])
                 k = api_similarity(model, pairs[j] + tmp_tag[t[0]], pairs[p]+tmp_tag[t[0]])
                 if 'nknown'not in k:
                     k = float(k)
@@ -41,13 +45,15 @@ def get_distant(model, direct, filepath, form='csv', find_n=False, ps=0):
                         #z = search_word(model,pairs[j] + tmp_tag[t[0]], pairs[p], form)
                         #other_z = search_word(model,pairs[p] + tmp_tag[t[0]], pairs[j], form)
 
-                    files[t[0]-1].write(curr[t[0]-1], 0, pairs[j])
-                    files[t[0]-1].write(curr[t[0]-1], 1, pairs[p])
-                    files[t[0]-1].write(curr[t[0]-1], 2, k)
-                    if find_n and z == 'Yes' and other_z == 'Yes':
-                        files[t[0]-1].write(curr[t[0]-1], 3, z)
-                    cl += 1
-                    curr[t[0]-1] += 1
+                    if k >= 0.9:
+                        print(pairs[j], pairs[p])
+                        files[t[0]-1].write(curr[t[0]-1], 0, pairs[j])
+                        files[t[0]-1].write(curr[t[0]-1], 1, pairs[p])
+                        files[t[0]-1].write(curr[t[0]-1], 2, k)
+                    #if find_n and z == 'Yes' and other_z == 'Yes':
+                    #    files[t[0]-1].write(curr[t[0]-1], 3, z)
+                        cl += 1
+                        curr[t[0]-1] += 1
                 else:
                     unknown_words[t[0]] += 1
                     files[4].write(curr[4], 0, pairs[j])
@@ -101,17 +107,18 @@ def count(file):
 
 def main():
     PART_OF_SPEECH = 0
-    FIND_NEIGHBOURS = False
-    models = [ #'tayga_upos_skipgram_300_2_2019',
+    FIND_NEIGHBOUR = False
+    models = [ 'tayga_upos_skipgram_300_2_2019',
                'ruscorpora_upos_cbow_300_20_2019',
-               'ruwikiruscorpora_upos_skipgram_300_2_2019',
-               'tayga_none_fasttextcbow_300_10_2019',
-               'news_upos_skipgram_300_5_2019',
-               'araneum_none_fasttextcbow_300_5_2018'
+               #'ruwikiruscorpora_upos_skipgram_300_2_2019',
+               #'tayga_none_fasttextcbow_300_10_2019',
+               #'news_upos_skipgram_300_5_2019',
+               #'araneum_none_fasttextcbow_300_5_2018'
              ]
-    filepath = 'RED.txt'
+    filepath = '../RED_WHITE.txt'
     for i in range(len(models)):
-        direct = models[i] + '_AREA_FIND'
+        print("-"*100)
+        direct = models[i] + '_WHITE_SYNON_2'
         get_distant(models[i], direct, filepath, FIND_NEIGHBOUR, PART_OF_SPEECH)
 if __name__ == "__main__":
     main()

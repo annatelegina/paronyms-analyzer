@@ -7,8 +7,8 @@ input_total = 0
 output_total = 0
 
 
-COUNT_STAT = False
-UNKNOWN = True
+COUNT_STAT = True
+UNKNOWN = False
 stat = { i: 0 for i in range(1, 11)}
 
 # path to the file you want to extract data from
@@ -31,7 +31,7 @@ while current_row < num_rows:
         coef = ""
     input_total = str(row_header) + " " +str(work_sheet.cell_value(current_row, 1)) + " " + str(coef)
     current_row += 1
-    print(input_total)
+    #print(input_total)
 
     if COUNT_STAT:
         for i in range(1, 11):
